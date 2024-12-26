@@ -9,6 +9,6 @@ namespace test.Model
     public class tPerson
     {
         public int PersonId { get; set; }
-        public int PersonName { get; set; }
+        public string PersonName { get; set; }
     }
 }

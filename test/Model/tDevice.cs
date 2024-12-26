@@ -9,6 +9,6 @@ namespace test.Model
     public class tDevice
     {
         public int DeviceId { get; set; }
-        public int DeviceName { get; set; }
+        public string DeviceName { get; set; }
     }
 }

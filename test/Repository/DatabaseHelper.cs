@@ -54,9 +54,29 @@ namespace test.Repository
             {
                 connection.Open();
                 string sql = @"
-                INSERT INTO Record (Timestamp, PersonId, MaterialRequestNumber, RepairRequestNumber, DeviceId, Remarks)
-                VALUES (@Timestamp, @PersonId, @MaterialRequestNumber, @RepairRequestNumber, @DeviceId, @Remarks)";
+                INSERT INTO Record (Timestamp, Person, MaterialRequestNumber, RepairRequestNumber, Device, Remarks)
+                VALUES (@Timestamp, @Person, @MaterialRequestNumber, @RepairRequestNumber, @Device, @Remarks)";
                 connection.Execute(sql, record);
+            }
+        }
+
+        public tRecord GetRecord(int id)
+        {
+            using (var connection = new SQLiteConnection($"Data Source={_dbPath};Version=3;"))
+            {
+                connection.Open();
+                string sql = "SELECT * FROM Record WHERE RecordId = @RecordId";
+                return connection.QueryFirstOrDefault<tRecord>(sql, new { RecordId = id });
+            }
+        }
+
+        public void DeleteRecord(int id)
+        {
+            using (var connection = new SQLiteConnection($"Data Source={_dbPath};Version=3;"))
+            {
+                connection.Open();
+                string sql = "DELETE FROM Record WHERE RecordId = @RecordId";
+                connection.Execute(sql, new { RecordId = id });
             }
         }
 
@@ -72,7 +92,7 @@ namespace test.Repository
             }
         }
 
-        public void InsertPerson(tPerson person)
+        public void InsertPerson(string name)
         {
             using (var connection = new SQLiteConnection($"Data Source={_dbPath};Version=3;"))
             {
@@ -80,21 +100,42 @@ namespace test.Repository
                 string sql = @"
                 INSERT INTO Person (PersonName)
                 VALUES (@PersonName)";
-                connection.Execute(sql, person);
+                connection.Execute(sql, new { PersonName = name });
             }
         }
 
-        public List<tPerson> GetAllPersons()
+        public tPerson GetPerson(string name)
+        {
+            using (var connection = new SQLiteConnection($"Data Source={_dbPath};Version=3;"))
+            {
+                connection.Open();
+                string sql = "SELECT * FROM Person WHERE PersonName = @PersonName";
+                return connection.QueryFirstOrDefault<tPerson>(sql, new { PersonName = name });
+            }
+        }
+
+        public void DeletePerson(string name)
+        {
+            using (var connection = new SQLiteConnection($"Data Source={_dbPath};Version=3;"))
+            {
+                connection.Open();
+                string sql = "DELETE FROM Person WHERE PersonName = @PersonName";
+                connection.Execute(sql, new { PersonName = name });
+            }
+        }
+
+
+        public List<string> GetAllPersons()
         {
             using (var connection = new SQLiteConnection($"Data Source={_dbPath};Version=3;"))
             {
                 connection.Open();
                 string sql = "SELECT * FROM Person";
-                return connection.Query<tPerson>(sql).ToList();
+                return connection.Query<tPerson>(sql).Select(p=>p.PersonName).ToList();
             }
         }
 
-        public void InsertDevice(tDevice device)
+        public void InsertDevice(string device)
         {
             using (var connection = new SQLiteConnection($"Data Source={_dbPath};Version=3;"))
             {
@@ -102,17 +143,39 @@ namespace test.Repository
                 string sql = @"
                 INSERT INTO Device (DeviceName)
                 VALUES (@DeviceName)";
-                connection.Execute(sql, device);
+                connection.Execute(sql, new { DeviceName = device });
             }
         }
 
-        public List<tDevice> GetAllDevices()
+        public tDevice GetDevice(string device)
+        {
+            using (var connection = new SQLiteConnection($"Data Source={_dbPath};Version=3;"))
+            {
+                connection.Open();
+                string sql = "SELECT * FROM Device WHERE DeviceName = @DeviceName";
+                return connection.QueryFirstOrDefault<tDevice>(sql, new { DeviceName = device });
+            }
+        }
+
+
+        public void DeleteDevice(string device)
+        {
+            using (var connection = new SQLiteConnection($"Data Source={_dbPath};Version=3;"))
+            {
+                connection.Open();
+                string sql = "DELETE FROM Device WHERE DeviceName = @DeviceName";
+                connection.Execute(sql, new { DeviceName = device });
+            }
+        }
+
+
+        public List<string> GetAllDevices()
         {
             using (var connection = new SQLiteConnection($"Data Source={_dbPath};Version=3;"))
             {
                 connection.Open();
                 string sql = "SELECT * FROM Device";
-                return connection.Query<tDevice>(sql).ToList();
+                return connection.Query<tDevice>(sql).Select(p=>p.DeviceName).ToList();
             }
         }
     }

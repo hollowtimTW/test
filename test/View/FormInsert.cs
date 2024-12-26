@@ -7,7 +7,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Linq;
 using test.Model;
+using test.Repository;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace test.View
 {
@@ -24,18 +27,75 @@ namespace test.View
             get { return _record; }
         }
 
-        public FormInsert()
+
+        public FormInsert(tRecord record = null)
         {
             InitializeComponent();
+            _record = record;
         }
 
         private void FormInsert_Load(object sender, EventArgs e)
         {
+            if (_record == null)
+            {
+                btnDel.Visible = false;
 
+                fName.Items.AddRange(Global.PersonList.ToArray());
+                fDevice.Items.AddRange(Global.DeviceList.ToArray());
+            }
+            else
+            {
+                btnOk.Visible = false;
+
+                fNamee.Visible = true;
+                fMaterialRequestNumber.ReadOnly = true;
+                fRepairRequestNumber.ReadOnly = true;
+                fDevicee.Visible = true;
+                fRemarks.ReadOnly = true;
+                fDatetime.Visible = true;
+
+                fNamee.Text = _record.Person;
+                fMaterialRequestNumber.Text = _record.MaterialRequestNumber;
+                fRepairRequestNumber.Text = _record.RepairRequestNumber;
+                fDevicee.Text = _record.Device;
+                fRemarks.Text = _record.Remarks;
+                fDatetime.Text = _record.Timestamp.ToString();
+            }
+        }
+
+        private bool ValidateForm()
+        {
+            if (string.IsNullOrWhiteSpace(fName.Text))
+            {
+                MessageBox.Show("請輸入姓名。", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+            if (string.IsNullOrWhiteSpace(fMaterialRequestNumber.Text))
+            {
+                MessageBox.Show("請輸入物料請求號。", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+            if (string.IsNullOrWhiteSpace(fRepairRequestNumber.Text))
+            {
+                MessageBox.Show("請輸入維修請求號。", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+            if (string.IsNullOrWhiteSpace(fDevice.Text))
+            {
+                MessageBox.Show("請輸入設備名稱。", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+
+            return true;
         }
 
         private void btnOk_Click(object sender, EventArgs e)
         {
+            if (!ValidateForm())
+            {
+                return;
+            }
+
             _record = new tRecord
             {
                 Person = fName.Text,
@@ -50,11 +110,21 @@ namespace test.View
             this.Close();
         }
 
-        private void btnCannel_Click(object sender, EventArgs e)
+        private void btnClose_Click(object sender, EventArgs e)
         {
             this.Close();
         }
 
-    
+        private void btnDel_Click(object sender, EventArgs e)
+        {
+            var result = MessageBox.Show("是否取消提交紀錄?", " ", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result == DialogResult.No)
+                return;
+
+            _result = DialogResult.Yes;
+            this.Close();
+        }
     }
 }
+
