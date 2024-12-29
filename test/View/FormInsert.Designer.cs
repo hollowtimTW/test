@@ -155,18 +155,20 @@
             // 
             // fTime
             // 
-            fTime.CustomFormat = "";
+            fTime.CustomFormat = "HH:mm";
             fTime.Font = new Font("Microsoft JhengHei UI", 13.8F, FontStyle.Bold);
-            fTime.Format = DateTimePickerFormat.Time;
+            fTime.Format = DateTimePickerFormat.Custom;
             fTime.Location = new Point(443, 489);
             fTime.Name = "fTime";
+            fTime.ShowUpDown = true;
             fTime.Size = new Size(195, 37);
             fTime.TabIndex = 22;
             // 
             // fDate
             // 
-            fDate.CustomFormat = "";
+            fDate.CustomFormat = "yyyyMMdd ";
             fDate.Font = new Font("Microsoft JhengHei UI", 13.8F, FontStyle.Bold);
+            fDate.Format = DateTimePickerFormat.Custom;
             fDate.Location = new Point(177, 489);
             fDate.Name = "fDate";
             fDate.Size = new Size(260, 37);
@@ -196,18 +198,23 @@
             fRepairRequestNumber.BackColor = Color.White;
             fRepairRequestNumber.Font = new Font("Microsoft JhengHei UI", 13.8F, FontStyle.Bold);
             fRepairRequestNumber.Location = new Point(177, 114);
+            fRepairRequestNumber.MaxLength = 10;
             fRepairRequestNumber.Name = "fRepairRequestNumber";
             fRepairRequestNumber.Size = new Size(461, 37);
             fRepairRequestNumber.TabIndex = 18;
+            fRepairRequestNumber.TextChanged += fRepairRequestNumber_TextChanged;
+            fRepairRequestNumber.KeyPress += fRepairRequestNumber_KeyPress;
             // 
             // fMaterialRequestNumber
             // 
             fMaterialRequestNumber.BackColor = Color.White;
             fMaterialRequestNumber.Font = new Font("Microsoft JhengHei UI", 13.8F, FontStyle.Bold);
             fMaterialRequestNumber.Location = new Point(177, 66);
+            fMaterialRequestNumber.MaxLength = 6;
             fMaterialRequestNumber.Name = "fMaterialRequestNumber";
             fMaterialRequestNumber.Size = new Size(461, 37);
             fMaterialRequestNumber.TabIndex = 17;
+            fMaterialRequestNumber.KeyPress += fMaterialRequestNumber_KeyPress;
             // 
             // fName
             // 

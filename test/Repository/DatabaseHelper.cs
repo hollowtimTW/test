@@ -28,7 +28,7 @@ namespace test.Repository
                 string sql = @"
                 CREATE TABLE Record (
                     RecordId INTEGER PRIMARY KEY AUTOINCREMENT,
-                    Timestamp DATETIME,
+                    Timestamp TEXT,
                     Person TEXT,
                     MaterialRequestNumber TEXT,
                     RepairRequestNumber TEXT,
@@ -80,6 +80,16 @@ namespace test.Repository
             }
         }
 
+        public void DeleteAllRecords()
+        {
+            using (var connection = new SQLiteConnection($"Data Source={_dbPath};Version=3;"))
+            {
+                connection.Open();
+                string sql = "DELETE FROM Record";
+                connection.Execute(sql);
+            }
+        }
+
         public List<Record> GetAllRecords()
         {
             using (var connection = new SQLiteConnection($"Data Source={_dbPath};Version=3;"))
@@ -88,7 +98,7 @@ namespace test.Repository
 
                 string sql = @"SELECT * FROM Record";
 
-                return connection.Query<Record>(sql).ToList();
+                return connection.Query<Record>(sql).OrderByDescending(p => p.RecordId).ToList();
             }
         }
 
