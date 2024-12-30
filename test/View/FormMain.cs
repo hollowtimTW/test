@@ -145,7 +145,7 @@ namespace test
         {
             if (e.RowIndex % 2 == 1)
             {
-                dataView.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.AntiqueWhite;
+                dataView.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.Silver;
             }
         }
 

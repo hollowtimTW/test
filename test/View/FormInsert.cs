@@ -87,9 +87,9 @@ namespace test.View
                 MessageBox.Show("請輸入報修單號！", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
-            if (fRepairRequestNumber.Text.Length != 10)
+            if (fRepairRequestNumber.Text.Length != 11)
             {
-                MessageBox.Show("報修單號須為10碼！", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("報修單號須為11碼！", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
             if (string.IsNullOrWhiteSpace(fDevice.Text))

@@ -198,7 +198,7 @@
             fRepairRequestNumber.BackColor = Color.White;
             fRepairRequestNumber.Font = new Font("Microsoft JhengHei UI", 13.8F, FontStyle.Bold);
             fRepairRequestNumber.Location = new Point(177, 114);
-            fRepairRequestNumber.MaxLength = 10;
+            fRepairRequestNumber.MaxLength = 11;
             fRepairRequestNumber.Name = "fRepairRequestNumber";
             fRepairRequestNumber.Size = new Size(461, 37);
             fRepairRequestNumber.TabIndex = 18;
