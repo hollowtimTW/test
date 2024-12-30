@@ -3,12 +3,14 @@ using test.Repository;
 using test.View;
 using System.Drawing;
 using System.Text;
+using test.Model;
 
 namespace test
 {
     public partial class FormMain : Form
     {
         DatabaseHelper _dbHelper;
+
         public FormMain()
         {
             InitializeComponent();
@@ -76,7 +78,9 @@ namespace test
 
         private void UpdateView()
         {
-            dataView.DataSource = _dbHelper.GetAllRecords();
+
+            Global.DataList = _dbHelper.GetAllRecords();
+            dataView.DataSource = Global.DataList;
         }
 
         private void dataView_SelectionChanged(object sender, EventArgs e)
@@ -89,20 +93,46 @@ namespace test
 
         private void btnToCSV_Click(object sender, EventArgs e)
         {
-            var data = _dbHelper.GetAllRecords();
+            var data = Global.DataList;
 
-            StringBuilder csvContent = new StringBuilder();
-            csvContent.AppendLine("時間,姓名,領料單號,報修單號,領用設備,備註");
-
-            foreach (var record in data)
+            if (data.Count == 0)
             {
-                csvContent.AppendLine($"{record.Timestamp},{record.Person},{record.MaterialRequestNumber},{record.RepairRequestNumber},{record.Device},{record.Remarks}");
+                MessageBox.Show("無資料！", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
             }
 
-            string csvFilePath = "records.csv";
-            File.WriteAllText(csvFilePath, csvContent.ToString(), Encoding.UTF8);
+            using (var workbook = new ClosedXML.Excel.XLWorkbook())
+            {
+                var worksheet = workbook.Worksheets.Add("Records");
 
-            MessageBox.Show("資料已儲存", "儲存成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                worksheet.Cell(1, 1).Value = "時間";
+                worksheet.Cell(1, 2).Value = "姓名";
+                worksheet.Cell(1, 3).Value = "領料單號";
+                worksheet.Cell(1, 4).Value = "報修單號";
+                worksheet.Cell(1, 5).Value = "領用設備";
+                worksheet.Cell(1, 6).Value = "備註";
+
+                for (int i = 0; i < data.Count; i++)
+                {
+                    var record = data[i];
+                    worksheet.Cell(i + 2, 1).Value = record.Timestamp;
+                    worksheet.Cell(i + 2, 2).Value = record.Person;
+                    worksheet.Cell(i + 2, 3).Value = record.MaterialRequestNumber;
+                    worksheet.Cell(i + 2, 4).Value = record.RepairRequestNumber;
+                    worksheet.Cell(i + 2, 5).Value = record.Device;
+                    worksheet.Cell(i + 2, 6).Value = record.Remarks;
+                }
+
+                string xlsxFilePath = $"{DateTime.Now.ToString("yyyyMMddHHmmss")}.xlsx";
+                workbook.SaveAs(xlsxFilePath);
+            }
+
+            var result = MessageBox.Show("資料已匯出，是否清除紀錄", "儲存成功", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (result == DialogResult.Yes)
+            {
+                _dbHelper.DeleteAllRecords();
+                UpdateView();
+            }
         }
 
         private void btnSetting_Click(object sender, EventArgs e)
@@ -117,6 +147,24 @@ namespace test
             {
                 dataView.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.Silver;
             }
+        }
+
+        private void textSearch_TextChanged(object sender, EventArgs e)
+        {
+
+            string searchText = textSearch.Text.ToLower();
+
+            var filteredData = Global.DataList 
+                .Where(p => 
+                    p.Timestamp.Contains(searchText) ||
+                    p.Person.Contains(searchText) ||
+                    p.MaterialRequestNumber.Contains(searchText) ||
+                    p.RepairRequestNumber.Contains(searchText) ||
+                    p.Device.Contains(searchText) 
+                    )
+                .ToList();
+
+            dataView.DataSource = filteredData;
         }
     }
 }

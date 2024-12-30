@@ -42,6 +42,8 @@ namespace test.View
 
                 fName.Items.AddRange(Global.PersonList.ToArray());
                 fDevice.Items.AddRange(Global.DeviceList.ToArray());
+
+                fRepairRequestNumber.Text = $"L{DateTime.Now.Year}";
             }
             else
             {
@@ -67,22 +69,32 @@ namespace test.View
         {
             if (string.IsNullOrWhiteSpace(fName.Text))
             {
-                MessageBox.Show("請輸入姓名。", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("請選擇姓名！", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
             if (string.IsNullOrWhiteSpace(fMaterialRequestNumber.Text))
             {
-                MessageBox.Show("請輸入物料請求號。", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("請輸入領料單號！", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+            if (fMaterialRequestNumber.Text.Length != 6)
+            {
+                MessageBox.Show("領料單號須為6碼！", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
             if (string.IsNullOrWhiteSpace(fRepairRequestNumber.Text))
             {
-                MessageBox.Show("請輸入維修請求號。", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("請輸入報修單號！", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+            if (fRepairRequestNumber.Text.Length != 11)
+            {
+                MessageBox.Show("報修單號須為11碼！", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
             if (string.IsNullOrWhiteSpace(fDevice.Text))
             {
-                MessageBox.Show("請輸入設備名稱。", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("請選擇領用設備！", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
 
@@ -96,6 +108,18 @@ namespace test.View
                 return;
             }
 
+            if (Global.DataList.Where(p => p.MaterialRequestNumber == fMaterialRequestNumber.Text).Any())
+            {
+                MessageBox.Show("領料單號已存在！", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (Global.DataList.Where(p => p.RepairRequestNumber == fRepairRequestNumber.Text).Any())
+            {
+                MessageBox.Show("報修單號已存在！", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             _record = new tRecord
             {
                 Person = fName.Text,
@@ -103,7 +127,7 @@ namespace test.View
                 RepairRequestNumber = fRepairRequestNumber.Text,
                 Device = fDevice.Text,
                 Remarks = fRemarks.Text,
-                Timestamp = fDate.Value.Date + fTime.Value.TimeOfDay
+                Timestamp = fDate.Text + fTime.Text
             };
 
             _result = DialogResult.OK;
@@ -124,6 +148,28 @@ namespace test.View
 
             _result = DialogResult.Yes;
             this.Close();
+        }
+
+        private void fMaterialRequestNumber_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsDigit(e.KeyChar) && !char.IsControl(e.KeyChar))
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void fRepairRequestNumber_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsLetterOrDigit(e.KeyChar) && !char.IsControl(e.KeyChar))
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void fRepairRequestNumber_TextChanged(object sender, EventArgs e)
+        {
+            fRepairRequestNumber.Text = fRepairRequestNumber.Text.ToUpper();
+            fRepairRequestNumber.SelectionStart = fRepairRequestNumber.Text.Length;
         }
     }
 }

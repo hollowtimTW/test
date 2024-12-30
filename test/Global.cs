@@ -12,6 +12,7 @@ namespace test
     {
         public static List<string> PersonList; 
         public static List<string> DeviceList;
+        public static List<Record> DataList;
 
     }
 }

@@ -12,11 +12,10 @@ namespace test.Model
     {
         public int RecordId { get; set; }
         [DisplayName("時間")]
-        public DateTime Timestamp { get; set; }
+        public string Timestamp { get; set; }
         [DisplayName("姓名")]
         public string Person { get; set; }
         [DisplayName("領料單號")]
-        [Browsable(false)]
         public string MaterialRequestNumber { get; set; }
         [DisplayName("報修單號")]
         public string RepairRequestNumber { get; set; }

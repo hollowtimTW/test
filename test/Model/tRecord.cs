@@ -11,7 +11,7 @@ namespace test.Model
     public class tRecord
     {
         public int RecordId { get; set; }
-        public DateTime Timestamp { get; set; }
+        public string Timestamp { get; set; }
         public string Person { get; set; }
         public string MaterialRequestNumber { get; set; }
         public string RepairRequestNumber { get; set; }
