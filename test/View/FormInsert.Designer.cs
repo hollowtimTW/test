@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             panel1 = new Panel();
+            checkStock = new CheckBox();
             fDatetime = new TextBox();
             fDevicee = new TextBox();
             fNamee = new TextBox();
@@ -54,6 +55,7 @@
             // panel1
             // 
             panel1.BackColor = SystemColors.Control;
+            panel1.Controls.Add(checkStock);
             panel1.Controls.Add(fDatetime);
             panel1.Controls.Add(fDevicee);
             panel1.Controls.Add(fNamee);
@@ -77,6 +79,18 @@
             panel1.Name = "panel1";
             panel1.Size = new Size(670, 590);
             panel1.TabIndex = 10;
+            // 
+            // checkStock
+            // 
+            checkStock.AutoSize = true;
+            checkStock.Font = new Font("Microsoft JhengHei UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 136);
+            checkStock.Location = new Point(475, 71);
+            checkStock.Name = "checkStock";
+            checkStock.Size = new Size(114, 29);
+            checkStock.TabIndex = 28;
+            checkStock.Text = "庫存不足";
+            checkStock.UseVisualStyleBackColor = true;
+            checkStock.CheckedChanged += checkStock_CheckedChanged;
             // 
             // fDatetime
             // 
@@ -130,10 +144,10 @@
             btnDel.BackColor = Color.Silver;
             btnDel.FlatAppearance.MouseOverBackColor = Color.Red;
             btnDel.FlatStyle = FlatStyle.Flat;
-            btnDel.Font = new Font("Microsoft JhengHei UI", 13.8F, FontStyle.Bold);
+            btnDel.Font = new Font("Microsoft JhengHei UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 136);
             btnDel.Location = new Point(32, 538);
             btnDel.Name = "btnDel";
-            btnDel.Size = new Size(120, 40);
+            btnDel.Size = new Size(150, 40);
             btnDel.TabIndex = 23;
             btnDel.Text = "刪除紀錄";
             btnDel.UseVisualStyleBackColor = false;
@@ -212,7 +226,7 @@
             fMaterialRequestNumber.Location = new Point(177, 66);
             fMaterialRequestNumber.MaxLength = 6;
             fMaterialRequestNumber.Name = "fMaterialRequestNumber";
-            fMaterialRequestNumber.Size = new Size(461, 37);
+            fMaterialRequestNumber.Size = new Size(280, 37);
             fMaterialRequestNumber.TabIndex = 17;
             fMaterialRequestNumber.KeyPress += fMaterialRequestNumber_KeyPress;
             // 
@@ -330,5 +344,6 @@
         private TextBox fDevicee;
         private TextBox fNamee;
         private TextBox fDatetime;
+        private CheckBox checkStock;
     }
 }

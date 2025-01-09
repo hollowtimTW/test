@@ -1,3 +1,5 @@
+using test.View;
+
 namespace test
 {
     internal static class Program

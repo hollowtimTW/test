@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using test.Model;
+using test.Models;
 using test.Repository;
 
 namespace test

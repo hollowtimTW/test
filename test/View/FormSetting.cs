@@ -1,107 +1,128 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using test.Models;
 using test.Repository;
 
 namespace test.View
 {
     public partial class FormSetting : Form
     {
-        DatabaseHelper _dbHelper;
+        private readonly JsonHelper _json;
 
         public FormSetting()
         {
             InitializeComponent();
+            _json = new JsonHelper();
         }
 
         private void FormSetting_Load(object sender, EventArgs e)
         {
-            _dbHelper = new DatabaseHelper("MyDatabase.db");
-
-            listName.Items.AddRange(_dbHelper.GetAllPersons().ToArray());
-            listDevice.Items.AddRange(_dbHelper.GetAllDevices().ToArray());
+            LoadItems();
         }
 
-        private void UpdateListName()
+        private void LoadItems()
         {
-            Global.PersonList = _dbHelper.GetAllPersons();
             listName.Items.Clear();
-            listName.Items.AddRange(Global.PersonList.ToArray());
-        }
-
-        private void UpdateListDevice()
-        {
-            Global.DeviceList = _dbHelper.GetAllDevices();
             listDevice.Items.Clear();
+            listName.Items.AddRange(Global.PersonList.ToArray());
             listDevice.Items.AddRange(Global.DeviceList.ToArray());
         }
 
-        private void btnNameAdd_Click(object sender, EventArgs e)
+        private void ListBox_MouseDown(object sender, MouseEventArgs e)
         {
-            var name = fName.Text.Trim();
-            fName.Text = "";
-
-            if (String.IsNullOrEmpty(name))
-                return;
-
-            if (_dbHelper.GetPerson(name) != null)
+            if (sender is ListBox listBox && listBox.SelectedItem != null)
             {
-                MessageBox.Show("Name already exists", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
+                listBox.DoDragDrop(listBox.SelectedItem, DragDropEffects.Move);
             }
-
-            _dbHelper.InsertPerson(name);
-            UpdateListName();
-        }
-        private void btnNameDel_Click(object sender, EventArgs e)
-        {
-            if (listName.SelectedItem == null)
-                return;
-
-            var name = listName.SelectedItem.ToString();
-
-            _dbHelper.DeletePerson(name);
-            UpdateListName();
         }
 
-        private void btnDeviceAdd_Click(object sender, EventArgs e)
+        private void ListBox_DragOver(object sender, DragEventArgs e)
         {
-            var device = fDevice.Text.Trim();
-            fDevice.Text = "";
+            e.Effect = DragDropEffects.Move;
+        }
 
-            if (String.IsNullOrEmpty(device))
-                return;
-
-            if (_dbHelper.GetDevice(device) != null)
+        private void ListBox_DragDrop(object sender, DragEventArgs e)
+        {
+            if (sender is ListBox listBox)
             {
-                MessageBox.Show("Device already exists", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
+                var point = listBox.PointToClient(new System.Drawing.Point(e.X, e.Y));
+                int index = listBox.IndexFromPoint(point);
+                if (index < 0) index = listBox.Items.Count - 1;
+
+                var data = e.Data.GetData(typeof(string));
+                int oldIndex = listBox.Items.IndexOf(data);
+
+                listBox.Items.RemoveAt(oldIndex);
+                listBox.Items.Insert(index, data);
             }
-
-            _dbHelper.InsertDevice(device);
-            UpdateListDevice();
-        }
-
-        private void btnDeviceDel_Click(object sender, EventArgs e)
-        {
-            if (listDevice.SelectedItem == null)
-                return;
-
-            var device = listDevice.SelectedItem.ToString();
-
-            _dbHelper.DeleteDevice(device);
-            UpdateListDevice();
         }
 
         private void btnClose_Click(object sender, EventArgs e)
         {
-            this.Close();
+            SaveData();
+            Close();
+        }
+
+        private void SaveData()
+        {
+            Global.PersonList = listName.Items.Cast<string>().ToList();
+            Global.DeviceList = listDevice.Items.Cast<string>().ToList();
+
+            var data = new JsonData
+            {
+                Names = Global.PersonList,
+                Devices = Global.DeviceList
+            };
+            _json.SaveData(data);
+        }
+
+        private void btnNameAdd_Click(object sender, EventArgs e)
+        {
+            var text = fName.Text.Trim();
+
+            if (string.IsNullOrEmpty(text)) return;
+
+            if (listName.Items.Contains(text))
+            {
+                MessageBox.Show("已有相同名稱");
+                return;
+            }
+
+            fName.Text = string.Empty;
+            listName.Items.Add(text);
+        }
+
+        private void btnNameDel_Click(object sender, EventArgs e)
+        {
+            if (listName.SelectedItem != null)
+            {
+                listName.Items.Remove(listName.SelectedItem);
+            }
+        }
+
+        private void btnDeviceAdd_Click(object sender, EventArgs e)
+        {
+            var text = fDevice.Text.Trim();
+
+            if (string.IsNullOrEmpty(text)) return;
+
+            if (listDevice.Items.Contains(text))
+            {
+                MessageBox.Show("已有相同名稱");
+                return;
+            }
+
+            fDevice.Text = string.Empty;
+            listDevice.Items.Add(text);
+        }
+
+        private void btnDeviceDel_Click(object sender, EventArgs e)
+        {
+            if (listDevice.SelectedItem != null)
+            {
+                listDevice.Items.Remove(listDevice.SelectedItem);
+            }
         }
     }
 }

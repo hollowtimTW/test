@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
-using test.Model;
+using test.Models;
 using test.Repository;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
@@ -21,14 +21,14 @@ namespace test.View
         {
             get { return _result; }
         }
-        private tRecord _record;
-        public tRecord Record
+        private Record _record;
+        public Record Record
         {
             get { return _record; }
         }
 
 
-        public FormInsert(tRecord record = null)
+        public FormInsert(Record record = null)
         {
             InitializeComponent();
             _record = record;
@@ -48,6 +48,8 @@ namespace test.View
             else
             {
                 btnOk.Visible = false;
+                checkStock.Checked = _record.Stock == 0;
+                checkStock.Enabled = false;
 
                 fNamee.Visible = true;
                 fMaterialRequestNumber.ReadOnly = true;
@@ -72,16 +74,21 @@ namespace test.View
                 MessageBox.Show("請選擇姓名！", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
-            if (string.IsNullOrWhiteSpace(fMaterialRequestNumber.Text))
+          
+            if (!checkStock.Checked)
             {
-                MessageBox.Show("請輸入領料單號！", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return false;
+                if (string.IsNullOrWhiteSpace(fMaterialRequestNumber.Text))
+                {
+                    MessageBox.Show("請輸入領料單號！", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
+                }
+                if (fMaterialRequestNumber.Text.Length != 6)
+                {
+                    MessageBox.Show("領料單號須為6碼！", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
+                }
             }
-            if (fMaterialRequestNumber.Text.Length != 6)
-            {
-                MessageBox.Show("領料單號須為6碼！", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return false;
-            }
+
             if (string.IsNullOrWhiteSpace(fRepairRequestNumber.Text))
             {
                 MessageBox.Show("請輸入報修單號！", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -107,11 +114,13 @@ namespace test.View
             {
                 return;
             }
-
-            if (Global.DataList.Where(p => p.MaterialRequestNumber == fMaterialRequestNumber.Text).Any())
+            if (!checkStock.Checked)
             {
-                MessageBox.Show("領料單號已存在！", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
+                if (Global.DataList.Where(p => p.MaterialRequestNumber == fMaterialRequestNumber.Text).Any())
+                {
+                    MessageBox.Show("領料單號已存在！", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
             }
 
             if (Global.DataList.Where(p => p.RepairRequestNumber == fRepairRequestNumber.Text).Any())
@@ -120,14 +129,15 @@ namespace test.View
                 return;
             }
 
-            _record = new tRecord
+            _record = new Record
             {
                 Person = fName.Text,
                 MaterialRequestNumber = fMaterialRequestNumber.Text,
                 RepairRequestNumber = fRepairRequestNumber.Text,
                 Device = fDevice.Text,
                 Remarks = fRemarks.Text,
-                Timestamp = fDate.Text + fTime.Text
+                Timestamp = fDate.Text + fTime.Text,
+                Stock = checkStock.Checked ? 0 : 1,
             };
 
             _result = DialogResult.OK;
@@ -170,6 +180,20 @@ namespace test.View
         {
             fRepairRequestNumber.Text = fRepairRequestNumber.Text.ToUpper();
             fRepairRequestNumber.SelectionStart = fRepairRequestNumber.Text.Length;
+        }
+
+        private void checkStock_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkStock.Checked)
+            {
+                fMaterialRequestNumber.ReadOnly = true;
+                fMaterialRequestNumber.Text = "庫存不足";
+            }
+            else
+            {
+                fMaterialRequestNumber.ReadOnly = false;
+                fMaterialRequestNumber.Text = String.Empty;
+            }
         }
     }
 }

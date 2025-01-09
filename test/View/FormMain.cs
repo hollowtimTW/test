@@ -3,13 +3,14 @@ using test.Repository;
 using test.View;
 using System.Drawing;
 using System.Text;
-using test.Model;
+using test.Models;
 
 namespace test
 {
     public partial class FormMain : Form
     {
-        DatabaseHelper _dbHelper;
+        DbHelper _dbHelper;
+        JsonHelper _json;
 
         public FormMain()
         {
@@ -18,10 +19,8 @@ namespace test
 
         private void FormMain_Load(object sender, EventArgs e)
         {
-            _dbHelper = new DatabaseHelper("MyDatabase.db");
-
-            Global.PersonList = _dbHelper.GetAllPersons();
-            Global.DeviceList = _dbHelper.GetAllDevices();
+            _dbHelper = new DbHelper();
+            _json = new JsonHelper();
 
             UpdateView();
 
@@ -37,6 +36,7 @@ namespace test
             dataView.CellClick += new DataGridViewCellEventHandler(btnCell_Click);
 
             dataView.Columns["RecordId"].Visible = false;
+            dataView.Columns["Stock"].Visible = false;
             dataView.ColumnHeadersDefaultCellStyle.BackColor = Color.Gray;
             dataView.EnableHeadersVisualStyles = false;
 
@@ -48,7 +48,7 @@ namespace test
             if (e.RowIndex >= 0 && dataView.Columns[e.ColumnIndex].Name == "詳細資訊")
             {
                 DataGridViewRow row = dataView.Rows[e.RowIndex];
-                if (row.Cells["RecordId"].Value is int id)
+                if (row.Cells["RecordId"].Value is long id)
                 {
                     var model = _dbHelper.GetRecord(id);
                     var form = new FormInsert(model);
@@ -154,17 +154,22 @@ namespace test
 
             string searchText = textSearch.Text.ToLower();
 
-            var filteredData = Global.DataList 
-                .Where(p => 
+            var filteredData = Global.DataList
+                .Where(p =>
                     p.Timestamp.Contains(searchText) ||
                     p.Person.Contains(searchText) ||
                     p.MaterialRequestNumber.Contains(searchText) ||
                     p.RepairRequestNumber.Contains(searchText) ||
-                    p.Device.Contains(searchText) 
+                    p.Device.Contains(searchText)
                     )
                 .ToList();
 
             dataView.DataSource = filteredData;
+        }
+
+        private void btnQSearch_Click(object sender, EventArgs e)
+        {
+            textSearch.Text = "庫存不足";
         }
     }
 }

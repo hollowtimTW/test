@@ -170,6 +170,7 @@
             // 
             // listDevice
             // 
+            listDevice.AllowDrop = true;
             listDevice.Font = new Font("Microsoft JhengHei UI", 13.8F, FontStyle.Bold);
             listDevice.FormattingEnabled = true;
             listDevice.ItemHeight = 29;
@@ -177,9 +178,13 @@
             listDevice.Name = "listDevice";
             listDevice.Size = new Size(324, 468);
             listDevice.TabIndex = 26;
+            listDevice.DragDrop += ListBox_DragDrop;
+            listDevice.DragOver += ListBox_DragOver;
+            listDevice.MouseDown += ListBox_MouseDown;
             // 
             // listName
             // 
+            listName.AllowDrop = true;
             listName.Font = new Font("Microsoft JhengHei UI", 13.8F, FontStyle.Bold);
             listName.FormattingEnabled = true;
             listName.ItemHeight = 29;
@@ -187,6 +192,9 @@
             listName.Name = "listName";
             listName.Size = new Size(202, 468);
             listName.TabIndex = 27;
+            listName.DragDrop += ListBox_DragDrop;
+            listName.DragOver += ListBox_DragOver;
+            listName.MouseDown += ListBox_MouseDown;
             // 
             // FormSetting
             // 
