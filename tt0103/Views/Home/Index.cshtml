@@ -1,0 +1,30 @@
+﻿
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+
+<table class="p-table" id="example"></table>
+
+@section Scripts {
+    <script src="~/lib/datatables.net/datatables.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#example').DataTable({
+                ajax: {
+                    url: 'api/category',
+                    dataSrc: '' 
+                },
+                columns: [
+                    { data: 'categoryId' },
+                    { data: 'categoryName' }
+                ],
+                paging: false, 
+                searching: true, 
+                info: false 
+            });
+        });
+    </script>
+}
+

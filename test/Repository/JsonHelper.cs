@@ -10,9 +10,9 @@ namespace test.Repository
     {
         private readonly string jsonPath;
 
-        public JsonHelper()
+        public JsonHelper(string fileName)
         {
-            jsonPath = Path.Combine(Environment.CurrentDirectory, "Data.json");
+            jsonPath = Path.Combine(Environment.CurrentDirectory, fileName);
             if (!File.Exists(jsonPath))
             {
                 var data = new JsonData

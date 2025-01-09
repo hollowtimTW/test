@@ -1,0 +1,54 @@
+﻿<div>
+    <div>
+        <div id="listCategory">
+        </div>
+        <div id="listChild">
+        </div>
+    </div>
+
+</div>
+
+
+@section Scripts {
+    <script>
+        function updateCategoryList() {
+            $.ajax({
+                url: '/api/category',
+                method: 'GET',
+                success: function (data) {
+                    var listCategory = $('#listCategory');
+                    listCategory.empty();
+                    data.forEach(function (category) {
+                        var listItem = $('<li class="list-group-item d-flex align-items-center ">' + category.categoryName + '</li>');
+
+                        listItem.on('click', function () {
+                            $('#listCategory .list-group-item').removeClass('choose');
+                            $(this).addClass('choose');
+                            $.ajax({
+                                url: '/api/childcategory/' + category.categoryId,
+                                method: 'GET',
+                                success: function (data) {
+                                    var listChildCategory = $('#listChildCategory');
+                                    listChildCategory.empty();
+                                    data.forEach(function (childCategory) {
+                                        var listItem = $('<li class="list-group-item d-flex align-items-center">' + childCategory.childCategoryName + '</li>');
+                                        listChildCategory.append(listItem);
+                                    });
+                                },
+                                error: function (error) {
+                                    console.error('Error fetching child categories:', error);
+                                }
+                            });
+                        });
+
+                        listCategory.append(listItem);
+                    });
+                },
+                error: function (error) {
+                    console.error('Error fetching categories:', error);
+                }
+            });
+        }
+
+    </script>
+}

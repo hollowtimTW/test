@@ -11,49 +11,92 @@ namespace test.Repository
 {
     public class DbHelper
     {
-        private readonly AppDbContext _context;
+        private readonly string _dbPath;
 
-        public DbHelper()
+        public DbHelper(string dbName)
         {
-            string dbPath = Path.Combine(Environment.CurrentDirectory, "MyDatabase.db");
-            _context = new AppDbContext(dbPath);
-            if (!File.Exists(dbPath))
+            _dbPath = Path.Combine(Environment.CurrentDirectory, dbName);
+            if (!File.Exists(_dbPath))
             {
-                _context.Database.Migrate();
+                CreateDatabase();
             }
+        }
 
+        private void CreateDatabase()
+        {
+            using (var connection = new SQLiteConnection($"Data Source={_dbPath};Version=3;"))
+            {
+                connection.Open();
+
+                string sql = @"
+                CREATE TABLE Record (
+                    RecordId INTEGER PRIMARY KEY AUTOINCREMENT,
+                    Timestamp TEXT,
+                    Person TEXT,
+                    MaterialRequestNumber TEXT,
+                    RepairRequestNumber TEXT,
+                    Device TEXT,
+                    Remarks TEXT,
+                    Stock INTEGER
+                )";
+
+                connection.Execute(sql);
+            }
         }
 
         public void InsertRecord(Record record)
         {
-            _context.Record.Add(record);
-            _context.SaveChanges();
+            using (var connection = new SQLiteConnection($"Data Source={_dbPath};Version=3;"))
+            {
+                connection.Open();
+                string sql = @"
+                INSERT INTO Record (Timestamp, Person, MaterialRequestNumber, RepairRequestNumber, Device, Remarks, Stock)
+                VALUES (@Timestamp, @Person, @MaterialRequestNumber, @RepairRequestNumber, @Device, @Remarks, @Stock)";
+                connection.Execute(sql, record);
+            }
         }
 
         public Record GetRecord(long id)
         {
-            return _context.Record.Find(id);
+            using (var connection = new SQLiteConnection($"Data Source={_dbPath};Version=3;"))
+            {
+                connection.Open();
+                string sql = "SELECT * FROM Record WHERE RecordId = @RecordId";
+                return connection.QueryFirstOrDefault<Record>(sql, new { RecordId = id });
+            }
         }
 
         public void DeleteRecord(long id)
         {
-            var record = _context.Record.Find(id);
-            if (record != null)
+            using (var connection = new SQLiteConnection($"Data Source={_dbPath};Version=3;"))
             {
-                _context.Record.Remove(record);
-                _context.SaveChanges();
+                connection.Open();
+                string sql = "DELETE FROM Record WHERE RecordId = @RecordId";
+                connection.Execute(sql, new { RecordId = id });
             }
         }
+
         public void DeleteAllRecords()
         {
-            _context.Record.RemoveRange(_context.Record);
-            _context.SaveChanges();
+            using (var connection = new SQLiteConnection($"Data Source={_dbPath};Version=3;"))
+            {
+                connection.Open();
+                string sql = "DELETE FROM Record";
+                connection.Execute(sql);
+            }
         }
 
         public List<Record> GetAllRecords()
         {
-            return _context.Record.OrderByDescending(r => r.RecordId).ToList();
+            using (var connection = new SQLiteConnection($"Data Source={_dbPath};Version=3;"))
+            {
+                connection.Open();
+
+                string sql = @"SELECT * FROM Record";
+
+                return connection.Query<Record>(sql).OrderByDescending(p => p.RecordId).ToList();
+            }
         }
-        
+
     }
 }

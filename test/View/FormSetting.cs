@@ -9,11 +9,11 @@ namespace test.View
     public partial class FormSetting : Form
     {
         private readonly JsonHelper _json;
+        public JsonData ReturnValue;
 
         public FormSetting()
         {
             InitializeComponent();
-            _json = new JsonHelper();
         }
 
         private void FormSetting_Load(object sender, EventArgs e)
@@ -60,21 +60,16 @@ namespace test.View
 
         private void btnClose_Click(object sender, EventArgs e)
         {
-            SaveData();
-            Close();
-        }
-
-        private void SaveData()
-        {
             Global.PersonList = listName.Items.Cast<string>().ToList();
             Global.DeviceList = listDevice.Items.Cast<string>().ToList();
 
-            var data = new JsonData
+            ReturnValue = new JsonData
             {
                 Names = Global.PersonList,
                 Devices = Global.DeviceList
             };
-            _json.SaveData(data);
+
+            Close();
         }
 
         private void btnNameAdd_Click(object sender, EventArgs e)

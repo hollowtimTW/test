@@ -19,8 +19,8 @@ namespace test
 
         private void FormMain_Load(object sender, EventArgs e)
         {
-            _dbHelper = new DbHelper();
-            _json = new JsonHelper();
+            _dbHelper = new DbHelper(".db");
+            _json = new JsonHelper("config.json");
 
             UpdateView();
 
@@ -139,6 +139,11 @@ namespace test
         {
             var form = new FormSetting();
             form.ShowDialog();
+
+            if(form.ReturnValue != null)
+            {
+                _json.SaveData(form.ReturnValue);
+            }
         }
 
         private void dataView_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e)
